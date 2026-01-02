@@ -50,6 +50,19 @@ static inline void set_cell(uint32_t chx, uint32_t chy, uint32_t x, uint32_t y, 
     grid[offset + y*chunk_size+x] = tl;
 }
 
+static inline tile get_cell(uint32_t x, uint32_t y)
+{
+    assert(x >= 0 && x < width);
+    assert(y >= 0 && y < height);
+
+    uint32_t chx = x/chunk_size;
+    uint32_t chy = y/chunk_size;
+    x -= chx*chunk_size;
+    y -= chx*chunk_size;
+
+    return get_cell(chx, chy, x, y);
+}
+
 void generate()
 {
     uint32_t w = width;
@@ -65,8 +78,29 @@ void generate()
     
 }
 
-static void update_chunk(uint32_t i, uint32_t j)
+static void update_chunk(uint32_t X, uint32_t Y)
 {
+    uint32_t x, y;
+
+    for(int icy = chunk_size - 1; icy >= 0; --icy)
+    for(int icx = 0; icx < chunk_size; ++icx)
+    {
+        if(get_cell(X, Y, icx, icy) == empty || get_cell(X, Y, icx, icy) == stone) continue;
+
+        y = Y*chunk_size + icy;
+        x = ((icy&1) == 0) ? (X*chunk_size + icx) : ((X+1)*chunk_size) - icx - 1;
+        
+
+        // Sand
+        if(get_cell(X, Y, icx, icy) == sand)
+        {
+            // Down
+            if(get_cell(x, y+1) == empty || get_cell(x, y+1) == water)
+            {
+                
+            }
+        }
+    }
 }
 
 void update()
@@ -74,7 +108,7 @@ void update()
     for(int i = height/chunk_size-1; i >= 0; --i)
     for(int j = 0; j < width/chunk_size; ++j)
     {
-        update_chunk(i, j);
+        update_chunk(j, i);
     }
 }
 
