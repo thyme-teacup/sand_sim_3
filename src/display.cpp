@@ -1,18 +1,31 @@
 #include "display.h"
 
-using namespace display;
+namespace display
+{
 
+// Definitions
+uint32_t width, height;
+Color    color_table[256];
+uint8_t  *screen_buffer;
+
+// New variables
 static Texture2D scr_buf_tx;
 static Image     scr_buf_img;
 
 // Functions
 void spawn_window(uint32_t w, uint32_t h, const char* title)
 {
-    InitWindow(w, h, title);
+    width = w;
+    height = h;
+
+    InitWindow(width, height, title);
     scr_buf_img = GenImageColor(width, height, (Color){0, 0, 0, 255});
     scr_buf_tx  = LoadTextureFromImage(scr_buf_img);
 
+    screen_buffer = (uint8_t*)malloc(sizeof(uint8_t)*width*height);
+
     memset(color_table, 0, sizeof(Color)*256);
+    memset(screen_buffer, 0, sizeof(uint8_t)*width*height);
 }
 
 void draw_window()
@@ -32,7 +45,11 @@ void draw_window()
 
 void kill_window()
 {
-    CloseWindow();
     UnloadTexture(scr_buf_tx);
     UnloadImage(scr_buf_img);
+    CloseWindow();
+
+    free(screen_buffer);
+}
+
 }
