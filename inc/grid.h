@@ -21,7 +21,7 @@ enum tile : uint8_t
     TILE_MAX,
 };
 
-extern tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE];
+__attribute__((aligned(64))) extern tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE];
 extern uint32_t dead_chunk_ticks[CVERT][CHORZ];
 
 // Functions
