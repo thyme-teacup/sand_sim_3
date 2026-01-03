@@ -125,6 +125,75 @@ static void update_chunk(uint32_t i, uint32_t j)
                 continue;
             }
         }
+
+        // Water
+        if(get_cell(x, y) == water)
+        {
+            // Down
+            if(get_cell(x, y+1) == empty)
+            {
+                swap_cells(x, y, x, y+1);
+                continue;
+            }
+            
+            // Diagonal randomness switch
+            if(get_cell(x-1, y+1) == empty && get_cell(x+1, y+1) == empty)
+            {
+                if(toggle_switch())
+                {
+                    swap_cells(x, y, x-1, y+1);
+                    continue;
+                }
+                else
+                {
+                    swap_cells(x, y, x+1, y+1);
+                    continue;
+                }
+            }
+
+            // Diagonal left
+            if(get_cell(x-1, y+1) == empty)
+            {
+                swap_cells(x, y, x-1, y+1);
+                continue;
+            }
+
+            // Diagonal right
+            if(get_cell(x+1, y+1) == empty)
+            {
+                swap_cells(x, y, x+1, y+1);
+                continue;
+            }
+
+            // Horizontal randomness switch
+            if(get_cell(x-1, y) == empty && get_cell(x+1, y) == empty)
+            {
+                if(toggle_switch())
+                {
+                    swap_cells(x, y, x-1, y);
+                    continue;
+                }
+                else
+                {
+                    swap_cells(x, y, x+1, y);
+                    continue;
+                }
+            }
+
+            // Horizontal left
+            if(get_cell(x-1, y) == empty)
+            {
+                swap_cells(x, y, x-1, y);
+                continue;
+            }
+
+            // Horizontal right
+            if(get_cell(x+1, y) == empty)
+            {
+                swap_cells(x, y, x+1, y);
+                continue;
+            }
+        }
     }
 }
 

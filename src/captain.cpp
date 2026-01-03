@@ -22,6 +22,17 @@ int main()
             }
         }
 
+    
+    for(int i = 16; i < 20; ++i)
+        for(int j = 10; j < 16; ++j)
+        {
+            for(int e = 0; e < CHUNK_SIZE; ++e)
+            for(int f = 0; f < CHUNK_SIZE; ++f)
+            {
+                grid[i][j][e][f] = water;
+            }
+        }
+
     while(!display::should_quit())
     {
         display::draw_window(display::RENDER_CHUNKED, CHUNK_SIZE);
