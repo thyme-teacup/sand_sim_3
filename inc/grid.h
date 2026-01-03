@@ -6,8 +6,8 @@
 
 #define CHUNK_SIZE 8
 static_assert((CHUNK_SIZE&(CHUNK_SIZE-1)) == 0, "Chunk size must be a power of 2.");
-#define WID 1024
-#define HEI 512
+#define WID 1536
+#define HEI 768
 static_assert(WID%CHUNK_SIZE == 0 && HEI%CHUNK_SIZE == 0, "Window size must be divisible by chunk size.");
 #define CHORZ (WID/CHUNK_SIZE)
 #define CVERT (HEI/CHUNK_SIZE)

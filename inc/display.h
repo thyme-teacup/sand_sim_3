@@ -2,6 +2,7 @@
 #define DISPLAY_H_
 
 #include "raylib.h"
+#include "grid.h"
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>

@@ -62,6 +62,8 @@ void draw_window(uint8_t render_flag, const int32_t chunk_size)
         {
             chunk_pos = (i*width/chunk_size) + j;
             offset = chunk_pos*chunk_size*chunk_size;
+
+            if(dead_chunk_ticks[i][j] != 0) continue;
         
             for(int e = 0; e < chunk_size; ++e)
             for(int f = 0; f < chunk_size; ++f)
