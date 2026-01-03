@@ -12,9 +12,10 @@ const uint8_t  RENDER_CHUNKED = 0x00000001;
 // New variables
 static Texture2D scr_buf_tx;
 static Image     scr_buf_img;
+static bool      alloc_flag;
 
 // Functions
-void spawn_window(uint32_t w, uint32_t h, const char* title)
+void spawn_window(uint32_t w, uint32_t h, const char* title, void *buf)
 {
     width = w;
     height = h;
@@ -23,7 +24,16 @@ void spawn_window(uint32_t w, uint32_t h, const char* title)
     scr_buf_img = GenImageColor(width, height, (Color){0, 0, 0, 255});
     scr_buf_tx  = LoadTextureFromImage(scr_buf_img);
 
-    screen_buffer = (uint8_t*)malloc(sizeof(uint8_t)*width*height);
+    if(buf == 0)
+    {
+        alloc_flag = true;
+        screen_buffer = (uint8_t*)malloc(sizeof(uint8_t)*width*height);
+    }
+    else
+    {
+        alloc_flag = false;
+        screen_buffer = (uint8_t*)buf;
+    }
 
     memset(color_table, 0, sizeof(Color)*256);
     memset(screen_buffer, 0, sizeof(uint8_t)*width*height); // For if the draw_window() called before the values
@@ -75,7 +85,7 @@ void kill_window()
     UnloadImage(scr_buf_img);
     CloseWindow();
 
-    free(screen_buffer);
+    if(alloc_flag == true) free(screen_buffer);
 }
 
 bool should_quit()
