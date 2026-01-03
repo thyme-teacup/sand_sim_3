@@ -279,10 +279,7 @@ static void* worker(void *arg)
 
     while(atomic_load(&kill_switch) == false)
     {
-        printf("Worker #%d doing work!\n", *((int*)arg));
     }
-
-    printf("Worker #%d stopping!\n", *((int*)arg));
 
     return 0;
 }

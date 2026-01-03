@@ -7,7 +7,6 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <string.h>
-#include <stdio.h> // TODO : remove this
 
 #define CHUNK_SIZE 8
 static_assert((CHUNK_SIZE&(CHUNK_SIZE-1)) == 0, "Chunk size must be a power of 2.");
