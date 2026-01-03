@@ -1,8 +1,10 @@
 #include "raylib.h"
 #include "display.h"
 #include "grid.h"
+#include <stdio.h>
 
 void set_colors();
+void print_FPS();
 
 int main()
 {
@@ -25,6 +27,8 @@ int main()
         display::draw_window(display::RENDER_CHUNKED, CHUNK_SIZE);
 
         grid_update();
+
+        if(IsKeyDown(KEY_F3)) print_FPS();
     }
 
     display::kill_window();
@@ -38,4 +42,9 @@ void set_colors()
     display::set_color(water, BLUE);
     display::set_color(sand,  YELLOW);
     display::set_color(stone, GRAY);
+}
+
+void print_FPS()
+{
+    printf("FPS: %d\n", GetFPS());
 }
