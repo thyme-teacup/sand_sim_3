@@ -22,6 +22,7 @@ enum tile : uint8_t
 };
 
 extern tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE];
+extern uint32_t dead_chunk_ticks[CVERT][CHORZ];
 
 // Functions
 extern void grid_update();

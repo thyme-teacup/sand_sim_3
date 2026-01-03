@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 void set_colors();
-void print_FPS();
+void show_diagnostics();
 
 int main()
 {
@@ -42,7 +42,7 @@ int main()
 
         user_ctrl();
 
-        if(IsKeyDown(KEY_F3)) print_FPS();
+        if(IsKeyDown(KEY_F3)) show_diagnostics();
     }
 
     display::kill_window();
@@ -58,7 +58,16 @@ void set_colors()
     display::set_color(stone, GRAY);
 }
 
-void print_FPS()
+void show_diagnostics()
 {
-    printf("FPS: %d\n", GetFPS());
+    printf("FPS: %d\t|\t", GetFPS());
+
+    uint32_t lcc = 0;
+    for(int i = 0; i < CVERT; ++i)
+        for(int j = 0; j < CHORZ; ++j)
+        {
+            if(dead_chunk_ticks[i][j] < 5) ++lcc;
+        }
+
+    printf("LCC: %d\n", lcc);
 }

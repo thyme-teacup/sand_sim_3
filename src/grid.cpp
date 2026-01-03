@@ -1,6 +1,7 @@
 #include "grid.h"
 
 tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE];
+uint32_t dead_chunk_ticks[CVERT][CHORZ] = {0};
 
 void set_cell(uint32_t x, uint32_t y, tile value)
 {
@@ -23,6 +24,8 @@ void set_cell(uint32_t x, uint32_t y, tile value)
     f = x&(CHUNK_SIZE-1);
 
     grid[i][j][e][f] = value;
+
+    dead_chunk_ticks[i][j] = 0;
 }
 
 static bool toggle_switch()
@@ -93,10 +96,14 @@ static void swap_cells(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
     grid[i2][j2][e2][f2] = (tile)(grid[i1][j1][e1][f1]^grid[i2][j2][e2][f2]);
     grid[i1][j1][e1][f1] = (tile)(grid[i1][j1][e1][f1]^grid[i2][j2][e2][f2]);
     
+    dead_chunk_ticks[i1][j1] = 0;
+    dead_chunk_ticks[i2][j2] = 0;
 }
 
 static void update_chunk(uint32_t i, uint32_t j)
 {
+    ++dead_chunk_ticks[i][j];
+
     uint32_t x, y;
     for(int e = CHUNK_SIZE-1; e >= 0; --e)
     for(int f = 0; f < CHUNK_SIZE; ++f)
@@ -225,6 +232,6 @@ void grid_update()
     for(int i = CVERT-1; i >= 0; --i)
     for(int j = 0; j < CHORZ; ++j)
     {
-        update_chunk(i, j);
+        if(dead_chunk_ticks[i][j] < 5) update_chunk(i, j);
     }
 }
