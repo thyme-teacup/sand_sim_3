@@ -1,5 +1,5 @@
 CXX=g++
-CFLAGS=-Iinc -MMD -MP -O3 -march=native
+CFLAGS=-Iinc -MMD -MP -O3 -march=native -std=c++11
 LIB=-Llib -lraylib -lm
 SRC=$(wildcard src/*.cpp)
 OBJ=$(addprefix obj/,$(notdir $(SRC:.cpp=.o)))
