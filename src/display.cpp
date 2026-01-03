@@ -5,13 +5,13 @@ namespace display
 
 // Definitions
 uint32_t width, height;
-Color    color_table[256];
 uint8_t  *screen_buffer;
 const uint8_t  RENDER_CHUNKED = 0x00000001;
 
-// New variables
+// Static variables
 static Texture2D scr_buf_tx;
 static Image     scr_buf_img;
+static Color     color_table[256];
 static bool      alloc_flag;
 
 // Functions
@@ -91,6 +91,11 @@ void kill_window()
 bool should_quit()
 {
     return WindowShouldClose();
+}
+
+void set_color(uint8_t val, Color color)
+{
+    color_table[val] = color;
 }
 
 }
