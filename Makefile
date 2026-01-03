@@ -1,8 +1,8 @@
-CXX=g++
-CFLAGS=-Iinc -MMD -MP -O3 -march=native -std=c++11
+CC=gcc
+CFLAGS=-Iinc -MMD -MP -O3 -march=native -std=c11 -pthread
 LIB=-Llib -lraylib -lm
-SRC=$(wildcard src/*.cpp)
-OBJ=$(addprefix obj/,$(notdir $(SRC:.cpp=.o)))
+SRC=$(wildcard src/*.c)
+OBJ=$(addprefix obj/,$(notdir $(SRC:.c=.o)))
 DEP=$(OBJ:.o=.d)
 EXE=main
 
@@ -14,7 +14,7 @@ EXE=main
 all: exe
 
 exe: $(OBJ)
-	$(CXX) $(OBJ) $(LIB) -o $(EXE)
+	$(CC) $(OBJ) $(LIB) -o $(EXE)
 
 run: exe
 	./$(EXE)
@@ -22,6 +22,6 @@ run: exe
 clean:
 	rm -rf obj $(EXE)
 
-obj/%.o: src/%.cpp
+obj/%.o: src/%.c
 	@mkdir obj -p
-	$(CXX) $< -c $(CFLAGS) -o $@
+	$(CC) $< -c $(CFLAGS) -o $@

@@ -9,7 +9,7 @@ void show_diagnostics();
 
 int main()
 {
-    display::spawn_window(WID, HEI, "Sandsim", (void*)grid);
+    display_spawn_window(WID, HEI, "Sandsim", (void*)grid);
 
     set_colors();
 
@@ -34,11 +34,13 @@ int main()
             }
         }
 
+    grid_jumpstart();
+
     while(!WindowShouldClose())
     {
         BeginDrawing();
 
-        display::draw_window(display::RENDER_CHUNKED, CHUNK_SIZE);
+        display_draw_window(RENDER_CHUNKED, CHUNK_SIZE);
 
         grid_update();
 
@@ -49,17 +51,18 @@ int main()
         EndDrawing();
     }
 
-    display::kill_window();
+    grid_kill();
+    display_kill_window();
 
     return 0;
 }
 
 void set_colors()
 {
-    display::set_color(empty, BROWN);
-    display::set_color(water, BLUE);
-    display::set_color(sand,  YELLOW);
-    display::set_color(stone, GRAY);
+    display_set_color(empty, BROWN);
+    display_set_color(water, BLUE);
+    display_set_color(sand,  YELLOW);
+    display_set_color(stone, GRAY);
 }
 
 void show_diagnostics()

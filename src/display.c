@@ -1,8 +1,5 @@
 #include "display.h"
 
-namespace display
-{
-
 // Definitions
 uint32_t width, height;
 uint8_t  *screen_buffer;
@@ -15,7 +12,7 @@ static Color     color_table[256];
 static bool      alloc_flag;
 
 // Functions
-void spawn_window(uint32_t w, uint32_t h, const char* title, void *buf)
+void display_spawn_window(uint32_t w, uint32_t h, const char* title, void *buf)
 {
     width = w;
     height = h;
@@ -40,7 +37,7 @@ void spawn_window(uint32_t w, uint32_t h, const char* title, void *buf)
                                                             // in screen_buffer are set.
 }
 
-void draw_window(uint8_t render_flag, const int32_t chunk_size)
+void display_draw_window(uint8_t render_flag, const int32_t chunk_size)
 {
     if(!(render_flag&RENDER_CHUNKED))
     {
@@ -57,10 +54,10 @@ void draw_window(uint8_t render_flag, const int32_t chunk_size)
         uint32_t chunk_pos;
         uint32_t offset;
 
-        for(int i = 0; i < height/chunk_size; ++i)
-        for(int j = 0; j < width/chunk_size;  ++j)
+        for(int i = 0; i < CVERT; ++i)
+        for(int j = 0; j < CHORZ;  ++j)
         {
-            chunk_pos = (i*width/chunk_size) + j;
+            chunk_pos = (i*CHORZ) + j;
             offset = chunk_pos*chunk_size*chunk_size;
 
             if(dead_chunk_ticks[i][j] != 0) continue;
@@ -79,7 +76,7 @@ void draw_window(uint8_t render_flag, const int32_t chunk_size)
     DrawTexture(scr_buf_tx, 0, 0, WHITE);
 }
 
-void kill_window()
+void display_kill_window()
 {
     UnloadTexture(scr_buf_tx);
     UnloadImage(scr_buf_img);
@@ -88,9 +85,7 @@ void kill_window()
     if(alloc_flag == true) free(screen_buffer);
 }
 
-void set_color(uint8_t val, Color color)
+void display_set_color(uint8_t val, Color color)
 {
     color_table[val] = color;
-}
-
 }

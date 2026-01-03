@@ -8,20 +8,15 @@
 #include <stdlib.h>
 #include <assert.h>
 
-namespace display
-{
-
 extern uint32_t width, height;
 extern uint8_t  *screen_buffer;
 
 extern const uint8_t RENDER_CHUNKED;
 
-extern void spawn_window(uint32_t w, uint32_t h, const char* title, void *buf = 0);
+extern void display_spawn_window(uint32_t w, uint32_t h, const char* title, void *buf);
 // NOTE: spawn_window ASSUMES correct size of the buffer!
-extern void draw_window(uint8_t render_flag = 0, const int32_t chunk_size = -1);
-extern void kill_window();
-extern void set_color(uint8_t val, Color color);
-
-}
+extern void display_draw_window(uint8_t render_flag, const int32_t chunk_size);
+extern void display_kill_window();
+extern void display_set_color(uint8_t val, Color color);
 
 #endif // DISPLAY_H_
