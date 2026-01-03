@@ -10,9 +10,16 @@ int main()
 
     set_colors();
 
+    grid[63][0][3][3] = sand;
+    grid[63][0][3][4] = sand;
+    grid[63][0][3][5] = sand;
+    grid[63][0][3][6] = sand;
+
     while(!display::should_quit())
     {
         display::draw_window(display::RENDER_CHUNKED, CHUNK_SIZE);
+
+        grid_update();
     }
 
     display::kill_window();

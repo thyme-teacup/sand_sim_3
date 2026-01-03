@@ -22,4 +22,7 @@ enum tile : uint8_t
 
 extern tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE];
 
+// Functions
+extern void grid_update();
+
 #endif // GRID_H_
