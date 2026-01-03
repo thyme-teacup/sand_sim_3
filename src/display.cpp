@@ -76,9 +76,7 @@ void draw_window(uint8_t render_flag, const int32_t chunk_size)
 
     UpdateTexture(scr_buf_tx, scr_buf_img.data);
 
-    BeginDrawing();
     DrawTexture(scr_buf_tx, 0, 0, WHITE);
-    EndDrawing();
 }
 
 void kill_window()
@@ -88,11 +86,6 @@ void kill_window()
     CloseWindow();
 
     if(alloc_flag == true) free(screen_buffer);
-}
-
-bool should_quit()
-{
-    return WindowShouldClose();
 }
 
 void set_color(uint8_t val, Color color)

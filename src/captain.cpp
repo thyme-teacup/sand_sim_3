@@ -34,8 +34,10 @@ int main()
             }
         }
 
-    while(!display::should_quit())
+    while(!WindowShouldClose())
     {
+        BeginDrawing();
+
         display::draw_window(display::RENDER_CHUNKED, CHUNK_SIZE);
 
         grid_update();
@@ -43,6 +45,8 @@ int main()
         user_ctrl();
 
         if(IsKeyDown(KEY_F3)) show_diagnostics();
+
+        EndDrawing();
     }
 
     display::kill_window();
@@ -66,7 +70,10 @@ void show_diagnostics()
     for(int i = 0; i < CVERT; ++i)
         for(int j = 0; j < CHORZ; ++j)
         {
-            if(dead_chunk_ticks[i][j] < 5) ++lcc;
+            if(dead_chunk_ticks[i][j] == 0)
+            {
+                ++lcc;
+            }
         }
 
     printf("LCC: %d\n", lcc);
