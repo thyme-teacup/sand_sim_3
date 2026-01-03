@@ -19,6 +19,7 @@ extern const uint8_t RENDER_CHUNKED;
 extern void spawn_window(uint32_t w, uint32_t h, const char* title);
 extern void draw_window(uint8_t render_flag = 0, const int32_t chunk_size = -1);
 extern void kill_window();
+extern bool should_quit();
 
 }
 

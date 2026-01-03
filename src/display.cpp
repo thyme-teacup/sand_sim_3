@@ -78,4 +78,9 @@ void kill_window()
     free(screen_buffer);
 }
 
+bool should_quit()
+{
+    return WindowShouldClose();
+}
+
 }
