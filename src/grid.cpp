@@ -2,6 +2,29 @@
 
 tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE];
 
+void set_cell(uint32_t x, uint32_t y, tile value)
+{
+    assert(x >= 0 && x < WID && y >= 0 && y < HEI);
+    assert(value < TILE_MAX && value >= 0);
+
+    uint32_t i, j, e, f;
+
+    i = y;
+    j = x;
+    uint32_t tmp = CHUNK_SIZE;
+    while(tmp != 1)
+    {
+        tmp >>= 1;
+        i >>= 1;
+        j >>= 1;
+    }
+
+    e = y&(CHUNK_SIZE-1);
+    f = x&(CHUNK_SIZE-1);
+
+    grid[i][j][e][f] = value;
+}
+
 static bool toggle_switch()
 {
     static bool ts = true;

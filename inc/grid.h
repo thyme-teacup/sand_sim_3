@@ -18,11 +18,13 @@ enum tile : uint8_t
     water = 1,
     sand  = 2,
     stone = 3,
+    TILE_MAX,
 };
 
 extern tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE];
 
 // Functions
 extern void grid_update();
+extern void set_cell(uint32_t x, uint32_t y, tile value);
 
 #endif // GRID_H_

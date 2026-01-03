@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "display.h"
 #include "grid.h"
+#include "user.h"
 #include <stdio.h>
 
 void set_colors();
@@ -38,6 +39,8 @@ int main()
         display::draw_window(display::RENDER_CHUNKED, CHUNK_SIZE);
 
         grid_update();
+
+        user_ctrl();
 
         if(IsKeyDown(KEY_F3)) print_FPS();
     }
