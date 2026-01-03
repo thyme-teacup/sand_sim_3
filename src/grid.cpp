@@ -1,6 +1,6 @@
 #include "grid.h"
 
-__attribute__((aligned(64))) tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE];
+tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE] __attribute__((aligned(64)));
 uint32_t dead_chunk_ticks[CVERT][CHORZ] = {0};
 
 void set_cell(uint32_t x, uint32_t y, tile value)
