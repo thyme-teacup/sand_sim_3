@@ -10,10 +10,15 @@ int main()
 
     set_colors();
 
-    grid[63][0][3][3] = sand;
-    grid[63][0][3][4] = sand;
-    grid[63][0][3][5] = sand;
-    grid[63][0][3][6] = sand;
+    for(int i = 10; i < 15; ++i)
+        for(int j = 10; j < 15; ++j)
+        {
+            for(int e = 0; e < CHUNK_SIZE; ++e)
+            for(int f = 0; f < CHUNK_SIZE; ++f)
+            {
+                grid[i][j][e][f] = sand;
+            }
+        }
 
     while(!display::should_quit())
     {

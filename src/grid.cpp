@@ -1,7 +1,5 @@
 #include "grid.h"
 
-#include <stdio.h> // TODO: remove this
-
 tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE];
 
 static bool toggle_switch()
@@ -94,6 +92,36 @@ static void update_chunk(uint32_t i, uint32_t j)
             if(get_cell(x, y+1) == empty || get_cell(x, y+1) == water)
             {
                 swap_cells(x, y, x, y+1);
+                continue;
+            }
+
+            // Diagonal randomness switch
+            if((get_cell(x-1, y+1) == empty || get_cell(x-1, y+1) == water)
+            && (get_cell(x+1, y+1) == empty || get_cell(x+1, y+1) == water))
+            {
+                if(toggle_switch())
+                {
+                    swap_cells(x, y, x-1, y+1);
+                    continue;
+                }
+                else
+                {
+                    swap_cells(x, y, x+1, y+1);
+                    continue;
+                }
+            }
+
+            // Diagonal left
+            if(get_cell(x-1, y+1) == empty || get_cell(x-1, y+1) == water)
+            {
+                swap_cells(x, y, x-1, y+1);
+                continue;
+            }
+
+            // Diagonal right
+            if(get_cell(x+1, y+1) == empty || get_cell(x+1, y+1) == water)
+            {
+                swap_cells(x, y, x+1, y+1);
                 continue;
             }
         }
