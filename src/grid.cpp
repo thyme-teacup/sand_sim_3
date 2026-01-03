@@ -100,131 +100,170 @@ static void swap_cells(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
     dead_chunk_ticks[i2][j2] = 0;
 }
 
+static void wake_up_adjacents(uint32_t i, uint32_t j)
+{
+    if(dead_chunk_ticks[i][j] != 0) return;
+
+    // Upwards
+    for(int f = 0; f < CHUNK_SIZE; ++f)
+        if(grid[i][j][0][f] == empty || grid[i][j][0][f] == water)
+        {
+            if(i!=0) dead_chunk_ticks[i-1][j] = 0;
+            break;
+        }
+
+    // Leftwards
+    for(int e = 0; e < CHUNK_SIZE; ++e)
+        if(grid[i][j][e][0] == empty || grid[i][j][e][0] == water)
+        {
+            if(j!=0) dead_chunk_ticks[i][j-1] = 0;
+            break;
+        }
+
+    // Rightwards
+    for(int e = 0; e < CHUNK_SIZE; ++e)
+        if(grid[i][j][e][CHUNK_SIZE-1] == empty || grid[i][j][e][CHUNK_SIZE-1] == water)
+        {
+            if(j!=CHORZ-1) dead_chunk_ticks[i][j+1] = 0;
+            break;
+        }
+
+    // Left corner
+    if(grid[i][j][0][0] == empty || grid[i][j][0][0] == water)
+        if(i!=0 && j!=0) dead_chunk_ticks[i-1][j-1] = 0;
+
+    // Right corner
+    if(grid[i][j][0][CHUNK_SIZE-1] == empty || grid[i][j][0][CHUNK_SIZE-1] == water)
+        if(i!=0 && j!=CHORZ-1) dead_chunk_ticks[i-1][j+1] = 0;
+}
+
 static void update_chunk(uint32_t i, uint32_t j)
 {
     ++dead_chunk_ticks[i][j];
 
     uint32_t x, y;
     for(int e = CHUNK_SIZE-1; e >= 0; --e)
-    for(int f = 0; f < CHUNK_SIZE; ++f)
-    {
-        // global coords
-        y = i*CHUNK_SIZE + e;
-        x = (y&1) == 0 ? j*CHUNK_SIZE+f : (j+1)*CHUNK_SIZE-f-1; // For alternating order
-
-        if(get_cell(x, y) == empty) continue;
-        if(get_cell(x, y) == stone) continue;
-
-        // Sand
-        if(get_cell(x, y) == sand)
+        for(int f = 0; f < CHUNK_SIZE; ++f)
         {
-            // Down
-            if(get_cell(x, y+1) == empty || get_cell(x, y+1) == water)
-            {
-                swap_cells(x, y, x, y+1);
-                continue;
-            }
+            // global coords
+            y = i*CHUNK_SIZE + e;
+            x = (y&1) == 0 ? j*CHUNK_SIZE+f : (j+1)*CHUNK_SIZE-f-1; // For alternating order
 
-            // Diagonal randomness switch
-            if((get_cell(x-1, y+1) == empty || get_cell(x-1, y+1) == water)
-            && (get_cell(x+1, y+1) == empty || get_cell(x+1, y+1) == water))
+            if(get_cell(x, y) == empty) continue;
+            if(get_cell(x, y) == stone) continue;
+    
+            // Sand
+            if(get_cell(x, y) == sand)
             {
-                if(toggle_switch())
+                // Down
+                if(get_cell(x, y+1) == empty || get_cell(x, y+1) == water)
+                {
+                    swap_cells(x, y, x, y+1);
+                    continue;
+                }
+    
+                // Diagonal randomness switch
+                if((get_cell(x-1, y+1) == empty || get_cell(x-1, y+1) == water)
+                && (get_cell(x+1, y+1) == empty || get_cell(x+1, y+1) == water))
+                {
+                    if(toggle_switch())
+                    {
+                        swap_cells(x, y, x-1, y+1);
+                        continue;
+                    }
+                    else
+                    {
+                        swap_cells(x, y, x+1, y+1);
+                        continue;
+                    }
+                }
+    
+                // Diagonal left
+                if(get_cell(x-1, y+1) == empty || get_cell(x-1, y+1) == water)
                 {
                     swap_cells(x, y, x-1, y+1);
                     continue;
                 }
-                else
+    
+                // Diagonal right
+                if(get_cell(x+1, y+1) == empty || get_cell(x+1, y+1) == water)
                 {
                     swap_cells(x, y, x+1, y+1);
                     continue;
                 }
             }
 
-            // Diagonal left
-            if(get_cell(x-1, y+1) == empty || get_cell(x-1, y+1) == water)
+            // Water
+            if(get_cell(x, y) == water)
             {
-                swap_cells(x, y, x-1, y+1);
-                continue;
-            }
-
-            // Diagonal right
-            if(get_cell(x+1, y+1) == empty || get_cell(x+1, y+1) == water)
-            {
-                swap_cells(x, y, x+1, y+1);
-                continue;
-            }
-        }
-
-        // Water
-        if(get_cell(x, y) == water)
-        {
-            // Down
-            if(get_cell(x, y+1) == empty)
-            {
-                swap_cells(x, y, x, y+1);
-                continue;
-            }
-            
-            // Diagonal randomness switch
-            if(get_cell(x-1, y+1) == empty && get_cell(x+1, y+1) == empty)
-            {
-                if(toggle_switch())
+                // Down
+                if(get_cell(x, y+1) == empty)
+                {
+                    swap_cells(x, y, x, y+1);
+                    continue;
+                }
+                
+                // Diagonal randomness switch
+                if(get_cell(x-1, y+1) == empty && get_cell(x+1, y+1) == empty)
+                {
+                    if(toggle_switch())
+                    {
+                        swap_cells(x, y, x-1, y+1);
+                        continue;
+                    }
+                    else
+                    {
+                        swap_cells(x, y, x+1, y+1);
+                        continue;
+                    }
+                }
+    
+                // Diagonal left
+                if(get_cell(x-1, y+1) == empty)
                 {
                     swap_cells(x, y, x-1, y+1);
                     continue;
                 }
-                else
+    
+                // Diagonal right
+                if(get_cell(x+1, y+1) == empty)
                 {
                     swap_cells(x, y, x+1, y+1);
                     continue;
                 }
-            }
-
-            // Diagonal left
-            if(get_cell(x-1, y+1) == empty)
-            {
-                swap_cells(x, y, x-1, y+1);
-                continue;
-            }
-
-            // Diagonal right
-            if(get_cell(x+1, y+1) == empty)
-            {
-                swap_cells(x, y, x+1, y+1);
-                continue;
-            }
-
-            // Horizontal randomness switch
-            if(get_cell(x-1, y) == empty && get_cell(x+1, y) == empty)
-            {
-                if(toggle_switch())
+    
+                // Horizontal randomness switch
+                if(get_cell(x-1, y) == empty && get_cell(x+1, y) == empty)
+                {
+                    if(toggle_switch())
+                    {
+                        swap_cells(x, y, x-1, y);
+                        continue;
+                    }
+                    else
+                    {
+                        swap_cells(x, y, x+1, y);
+                        continue;
+                    }
+                }
+    
+                // Horizontal left
+                if(get_cell(x-1, y) == empty)
                 {
                     swap_cells(x, y, x-1, y);
                     continue;
                 }
-                else
+    
+                // Horizontal right
+                if(get_cell(x+1, y) == empty)
                 {
                     swap_cells(x, y, x+1, y);
                     continue;
                 }
             }
-
-            // Horizontal left
-            if(get_cell(x-1, y) == empty)
-            {
-                swap_cells(x, y, x-1, y);
-                continue;
-            }
-
-            // Horizontal right
-            if(get_cell(x+1, y) == empty)
-            {
-                swap_cells(x, y, x+1, y);
-                continue;
-            }
         }
-    }
+
+    wake_up_adjacents(i, j);
 }
 
 void grid_update()
