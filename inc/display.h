@@ -8,12 +8,12 @@
 #include <stdlib.h>
 #include <assert.h>
 
-extern uint32_t width, height;
+extern int32_t width, height;
 extern uint8_t  *screen_buffer;
 
 extern const uint8_t RENDER_CHUNKED;
 
-extern void display_spawn_window(uint32_t w, uint32_t h, const char* title, void *buf);
+extern void display_spawn_window(int32_t w, int32_t h, const char* title, void *buf);
 // NOTE: spawn_window ASSUMES correct size of the buffer!
 extern void display_draw_window(uint8_t render_flag, const int32_t chunk_size);
 extern void display_kill_window();

@@ -69,7 +69,7 @@ void show_diagnostics()
 {
     printf("FPS: %d\t|\t", GetFPS());
 
-    uint32_t lcc = 0;
+    int32_t lcc = 0;
     for(int i = 0; i < CVERT; ++i)
         for(int j = 0; j < CHORZ; ++j)
         {

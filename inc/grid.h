@@ -28,6 +28,6 @@ extern int32_t dead_chunk_ticks[CVERT][CHORZ];
 
 // Functions
 extern void grid_update();
-extern void set_cell(uint32_t x, uint32_t y, tile value);
+extern void set_cell(int32_t x, int32_t y, tile value);
 
 #endif // GRID_H_

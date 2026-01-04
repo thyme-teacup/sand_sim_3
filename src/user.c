@@ -19,16 +19,16 @@ static void brush_set(uint8_t newset)
     brush.value = newset;
 }
 
-static void brush_use(uint32_t x, uint32_t y)
+static void brush_use(int32_t x, int32_t y)
 {
-    uint32_t l, r, t, b;
+    int32_t l, r, t, b;
 
     l = ((int32_t)x-brush.size < 0)  ? 0        : x-brush.size;
     r = (x+brush.size >= WID)        ? WID - 1  : x+brush.size;
     t = ((int32_t)y-brush.size < 0)  ? 0        : y-brush.size;
     b = (y+brush.size >= HEI)        ? HEI - 1  : y+brush.size;
 
-    uint32_t sq_dist;
+    int32_t sq_dist;
     for(int i = t; i <= b; ++i)
     for(int j = l; j <= r; ++j)
     {

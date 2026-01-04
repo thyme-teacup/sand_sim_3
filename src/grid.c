@@ -3,16 +3,16 @@
 tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE] __attribute__((aligned(64)));
 int32_t dead_chunk_ticks[CVERT][CHORZ];
 
-void set_cell(uint32_t x, uint32_t y, tile value)
+void set_cell(int32_t x, int32_t y, tile value)
 {
     assert(x >= 0 && x < WID && y >= 0 && y < HEI);
     assert(value < TILE_MAX && value >= 0);
 
-    uint32_t i, j, e, f;
+    int32_t i, j, e, f;
 
     i = y;
     j = x;
-    uint32_t tmp = 1;
+    int32_t tmp = 1;
     while(tmp != CHUNK_SIZE)
     {
         tmp <<= 1;
@@ -28,15 +28,15 @@ void set_cell(uint32_t x, uint32_t y, tile value)
     dead_chunk_ticks[i][j] = 0;
 }
 
-static tile get_cell(uint32_t x, uint32_t y)
+static tile get_cell(int32_t x, int32_t y)
 {
     if(x < 0 || x >= WID || y < 0 || y >= HEI) return stone;
 
-    uint32_t i, j, e, f;
+    int32_t i, j, e, f;
 
     i = y;
     j = x;
-    uint32_t tmp = CHUNK_SIZE;
+    int32_t tmp = CHUNK_SIZE;
     while(tmp != 1)
     {
         tmp >>= 1;
@@ -50,18 +50,18 @@ static tile get_cell(uint32_t x, uint32_t y)
     return grid[i][j][e][f];
 }
 
-static void swap_cells(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
+static void swap_cells(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
     assert(x1 >= 0 && x1 < WID);
     assert(y1 >= 0 && y1 < HEI);
     assert(x2 >= 0 && x2 < WID);
     assert(y2 >= 0 && y2 < HEI);
 
-    uint32_t i1, j1, e1, f1, i2, j2, e2, f2;
+    int32_t i1, j1, e1, f1, i2, j2, e2, f2;
 
     i1 = y1;
     j1 = x1;
-    uint32_t tmp = 1;
+    int32_t tmp = 1;
     while(tmp != CHUNK_SIZE)
     {
         tmp <<= 1;
@@ -93,7 +93,7 @@ static void swap_cells(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
     dead_chunk_ticks[i2][j2] = 0;
 }
 
-static void wake_up_adjacents(uint32_t i, uint32_t j)
+static void wake_up_adjacents(int32_t i, int32_t j)
 {
     if(dead_chunk_ticks[i][j] != 0) return;
 
@@ -130,11 +130,11 @@ static void wake_up_adjacents(uint32_t i, uint32_t j)
         if(i!=0 && j!=CHORZ-1) dead_chunk_ticks[i-1][j+1] = 0;
 }
 
-static void update_chunk(uint32_t i, uint32_t j)
+static void update_chunk(int32_t i, int32_t j)
 {
     ++dead_chunk_ticks[i][j];
 
-    uint32_t x, y;
+    int32_t x, y;
     for(int e = CHUNK_SIZE-1; e >= 0; --e)
         for(int f = 0; f < CHUNK_SIZE; ++f)
         {

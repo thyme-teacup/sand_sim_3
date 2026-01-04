@@ -1,7 +1,7 @@
 #include "display.h"
 
 // Definitions
-uint32_t width, height;
+int32_t width, height;
 uint8_t  *screen_buffer;
 const uint8_t  RENDER_CHUNKED = 0x00000001;
 
@@ -12,7 +12,7 @@ static Color     color_table[256];
 static bool      alloc_flag;
 
 // Functions
-void display_spawn_window(uint32_t w, uint32_t h, const char* title, void *buf)
+void display_spawn_window(int32_t w, int32_t h, const char* title, void *buf)
 {
     width = w;
     height = h;
@@ -51,8 +51,8 @@ void display_draw_window(uint8_t render_flag, const int32_t chunk_size)
     {
         assert(chunk_size > 0);
 
-        uint32_t chunk_pos;
-        uint32_t offset;
+        int32_t chunk_pos;
+        int32_t offset;
 
         for(int i = 0; i < CVERT; ++i)
         for(int j = 0; j < CHORZ;  ++j)
