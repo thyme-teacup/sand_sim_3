@@ -1,7 +1,6 @@
 #include "grid.h"
 
 tile grid[CVERT][CHORZ][CHUNK_SIZE][CHUNK_SIZE] __attribute__((aligned(64)));
-atomic_int dead_chunk_ticks[CVERT][CHORZ];
 
 void set_cell(uint32_t x, uint32_t y, tile value)
 {
@@ -12,10 +11,10 @@ void set_cell(uint32_t x, uint32_t y, tile value)
 
     i = y;
     j = x;
-    uint32_t tmp = CHUNK_SIZE;
-    while(tmp != 1)
+    uint32_t tmp = 1;
+    while(tmp != CHUNK_SIZE)
     {
-        tmp >>= 1;
+        tmp <<= 1;
         i >>= 1;
         j >>= 1;
     }
@@ -26,13 +25,6 @@ void set_cell(uint32_t x, uint32_t y, tile value)
     grid[i][j][e][f] = value;
 
     atomic_store(&(dead_chunk_ticks[i][j]), 0);
-}
-
-static bool toggle_switch()
-{
-    static bool ts = true;
-
-    return ts = !ts;
 }
 
 static tile get_cell(uint32_t x, uint32_t y)
@@ -166,7 +158,7 @@ static void update_chunk(uint32_t i, uint32_t j)
                 if((get_cell(x-1, y+1) == empty || get_cell(x-1, y+1) == water)
                 && (get_cell(x+1, y+1) == empty || get_cell(x+1, y+1) == water))
                 {
-                    if(toggle_switch())
+                    if(y&1)
                     {
                         swap_cells(x, y, x-1, y+1);
                         continue;
@@ -206,7 +198,7 @@ static void update_chunk(uint32_t i, uint32_t j)
                 // Diagonal randomness switch
                 if(get_cell(x-1, y+1) == empty && get_cell(x+1, y+1) == empty)
                 {
-                    if(toggle_switch())
+                    if(y&1)
                     {
                         swap_cells(x, y, x-1, y+1);
                         continue;
@@ -235,7 +227,7 @@ static void update_chunk(uint32_t i, uint32_t j)
                 // Horizontal randomness switch
                 if(get_cell(x-1, y) == empty && get_cell(x+1, y) == empty)
                 {
-                    if(toggle_switch())
+                    if(y&1)
                     {
                         swap_cells(x, y, x-1, y);
                         continue;
@@ -269,16 +261,80 @@ static void update_chunk(uint32_t i, uint32_t j)
 /* MULTITHREADING PART */
 
 // Threads stuff
-static atomic_bool cooked[CVERT][CHORZ];
+static atomic_bool cooked[CVERT][CHORZ]; // Whether chunk has been already processed this frame
 static atomic_bool kill_switch = ATOMIC_VAR_INIT(false);
+static atomic_bool frame_launch[THREAD_COUNT]; // Start signal for each frame
 static pthread_t   threads[THREAD_COUNT];
+static atomic_bool taken[CVERT][CHORZ]; // Whether the chunk is being currently processed
+atomic_int dead_chunk_ticks[CVERT][CHORZ];
+
+static bool seize_chunk(int32_t i, int32_t j)
+{
+    if(i < 0 || i >= CVERT || j < 0 || j >= CHORZ) return true;
+
+    if(atomic_load(&(taken[i][j])) == true) return false;
+
+    atomic_store(&(taken[i][j]), true);
+    return true;
+}
+
+static void release_chunk(int32_t i, int32_t j)
+{
+    if(i < 0 || i >= CVERT || j < 0 || j >= CHORZ) return;
+
+    atomic_store(&(taken[i][j]), false);
+}
 
 static void* worker(void *arg)
 {
-    (void)arg;
+    uint32_t id = *((int*)arg);
+    uint32_t l, r;
 
     while(atomic_load(&kill_switch) == false)
     {
+        while(atomic_load(&(frame_launch[id])) != true); // We wait
+
+        // We started
+        l = id*CHORZ;
+        r = (id+1)*CHORZ - 1;
+
+        for(int i = CVERT-1; i >= 0; --i)
+        for(int j = l; j <= r; ++j)
+        {
+            // We need the chunk to the left of us to be cooked
+            while(true) {if(j == 0 || atomic_load(&(cooked[i][j-1])) == true) break;}
+
+            // We need to claim 3x3 area of chunks around us
+            while(true) if(seize_chunk(i-1, j-1)) break;
+            while(true) if(seize_chunk(i-1, j)) break;
+            while(true) if(seize_chunk(i-1, j+1)) break;
+            while(true) if(seize_chunk(i,   j-1)) break;
+            while(true) if(seize_chunk(i,   j)) break;
+            while(true) if(seize_chunk(i,   j+1)) break;
+            while(true) if(seize_chunk(i+1, j-1)) break;
+            while(true) if(seize_chunk(i+1, j)) break;
+            while(true) if(seize_chunk(i+1, j+1)) break;
+
+            // Now we can work in peace
+            if(atomic_load(&(dead_chunk_ticks[i][j])) < 5)
+            {
+                update_chunk(i, j);
+            }
+            atomic_store(&(cooked[i][j]), true);
+
+            // We can let go of the chunks now
+            release_chunk(i-1, j-1);
+            release_chunk(i-1, j);
+            release_chunk(i-1, j+1);
+            release_chunk(i,   j-1);
+            release_chunk(i,   j);
+            release_chunk(i,   j+1);
+            release_chunk(i+1, j-1);
+            release_chunk(i+1, j);
+            release_chunk(i+1, j+1);
+        }
+
+        atomic_store(&(frame_launch[id]), false);
     }
 
     return 0;
@@ -292,6 +348,7 @@ void grid_jumpstart()
         for(int j = 0; j < CHORZ; ++j)
         {
             atomic_store(&(dead_chunk_ticks[i][j]), 0);
+            atomic_store(&(taken[i][j]), false);
         }
 
     for(int i = 0; i < THREAD_COUNT; ++i)
@@ -299,22 +356,42 @@ void grid_jumpstart()
         id[i] = i;
         pthread_create(&threads[i], NULL, worker, &(id[i]));
     }
+
+    for(int i = 0; i < THREAD_COUNT; ++i)
+    {
+        atomic_store(&(frame_launch[i]), true);
+    }
 }
 
 void grid_update()
 {
+    // Clean the flags for our boys
     for(int i = CVERT-1; i >= 0; --i)
         for(int j = 0; j < CHORZ; ++j)
         {
             atomic_store(&(cooked[i][j]), false);
+            atomic_store(&(taken[i][j]), false);
         }
 
-    for(int i = CVERT-1; i >= 0; --i)
-    for(int j = 0; j < CHORZ; ++j)
+    // Ready... Start!
+    for(int i = 0; i < THREAD_COUNT; ++i)
     {
-        if(atomic_load(&(dead_chunk_ticks[i][j])) < 5) update_chunk(i, j);
+        atomic_store(&(frame_launch[i]), true);
+    }
 
-        atomic_store(&(cooked[i][j]), true);
+    // Now we're waiting for our boys to finish...
+    while(true)
+    {
+        for(int i = 0; i < THREAD_COUNT; ++i)
+        {
+            if(atomic_load(&(frame_launch[i])) == true) // The thread hasn't finished its work yet
+                goto nope;
+        }
+
+        break;
+
+        nope:
+        continue;
     }
 }
 
