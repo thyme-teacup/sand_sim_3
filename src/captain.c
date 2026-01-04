@@ -34,7 +34,6 @@ int main()
             }
         }
 
-    grid_jumpstart();
 
     while(!WindowShouldClose())
     {
@@ -51,7 +50,6 @@ int main()
         EndDrawing();
     }
 
-    grid_kill();
     display_kill_window();
 
     return 0;
