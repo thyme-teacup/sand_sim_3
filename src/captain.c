@@ -34,6 +34,8 @@ int main()
             }
         }
 
+    brush_init();
+
 
     while(!WindowShouldClose())
     {

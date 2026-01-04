@@ -2,6 +2,12 @@
 
 struct Brush brush;
 
+void brush_init()
+{
+    brush.size = 16;
+    brush.value = sand;
+}
+
 static void brush_resize(uint8_t d) // Yes, overflow is intentional
 {
     brush.size += d;

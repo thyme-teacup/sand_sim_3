@@ -13,6 +13,7 @@ extern struct Brush
 
 } brush;
 
+extern void brush_init();
 extern void user_ctrl();
 
 #endif // USER_H_
