@@ -39,6 +39,8 @@ I will note the main/most impactful ones.
 - Each chunk goes dead after 5 ticks of inactivity;
 - If there were no writes on a given chunk during a frame, it does not get written to screen buffer;
 - Each chunk is a continuous piece of memory;
+- I don't know if this one counts as "optimimization", but tiles are stored as u8s. Anything larger isn't
+cache-friendly in chunks, and anything smaller is too much extra operations to access one-by-one.
 - Chunk size is 8x8, and it consists of u8s. This makes it so every chunk is exactly 64 bytes big, and fits into
 a single cache line;
 - The chunks are all aligned to 64 bytes(though doing this one didn't have much effect. gcc was probably aligning them
