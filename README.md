@@ -43,6 +43,9 @@ I will note the main/most impactful ones.
 a single cache line;
 - The chunks are all aligned to 64 bytes(though doing this one didn't have much effect. gcc was probably aligning them
 even wihtout my interference);
+- The divisions and modulo operations in the get_cell function are replaced for bit shifts and bitwise ANDs. I
+ensured that the chunk size is *always* a power of two, using static asserts. *Yes*, they were impacting the
+performance enough to be worried about. Perf said so. *idiv*s are *evil*.
 - All the changes are written into a buffer in CPU memory during the frame, and, at the end of the frame, sent to GPU
 memory all at once. This is basically software rendering, but it's *faster* when you do tons of per-pixel updates. GPU
 *struggles* with  draw calls per frame, even if batched.
