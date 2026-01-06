@@ -11,7 +11,8 @@ broke sand/water's logic, or dropped my FPS to straight up 20.
 is higher than 160.
 - The FPS of 160 was recorded *specifically* when I was *actively* filling roughly a half of the screen with both sand
 and water. As soon as I stop adding anything for about 2 seconds, FPS jacks to 200+.
-- These FPS were recorded with "-DNDEBUG", which disables all the asserts I used.
+- These FPS were recorded with "-DNDEBUG", which disables all the asserts I used. This flag is not present in the
+Makefile, so be aware if you want to fact-check my claim of FPS.
 
 ### The hardware used:
 - i5 7500 (4C/4T, 3.4-3.8 GHz);
