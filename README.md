@@ -10,7 +10,7 @@ broke sand/water's logic, or dropped my FPS to straight up 20.
 - The diagnostics function(GetFPS(), basically) *visibly* slows down the simulation, so the actual framerate
 is higher than 160.
 - The FPS of 160 was recorded *specifically* when I was *actively* filling roughly a half of the screen with both sand
-and water. As soon as I stop adding anything for about 2 seconds, FPS jacks to 200+.
+and water. As soon as I stop adding anything for about 2 seconds, FPS jacks to 200+. Edit: 340fps on a lighter OS on the same machine.
 - These FPS were recorded with "-DNDEBUG", which disables all the asserts I used. This flag is not present in the
 Makefile, so be aware if you want to fact-check my claim of FPS.
 
